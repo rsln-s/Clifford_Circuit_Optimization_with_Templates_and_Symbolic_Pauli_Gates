@@ -28,7 +28,6 @@ def verify_one_experiment(row, AG):
 
 
 def verify(df, AG=False):
-    return
     start = time.time()
     df.apply(lambda row: verify_one_experiment(row, AG), axis=1)
     end = time.time()
