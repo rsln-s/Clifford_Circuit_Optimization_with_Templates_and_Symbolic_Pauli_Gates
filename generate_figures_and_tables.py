@@ -15,7 +15,9 @@ import seaborn as sns
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Clifford
 import time
-from tqdm import tqdm
+from pandarallel import pandarallel
+
+pandarallel.initialize(progress_bar=True)
 
 def verify_one_experiment(row, AG):
     c_orig = Clifford(QuantumCircuit.from_qasm_str(row['original']))
@@ -29,9 +31,8 @@ def verify_one_experiment(row, AG):
 
 
 def verify(df, AG=False):
-    tqdm.pandas()
     start = time.time()
-    df.progress_apply(lambda row: verify_one_experiment(row, AG), axis=1)
+    df.parallel_apply(lambda row: verify_one_experiment(row, AG), axis=1)
     end = time.time()
     print(f"Completed in {end - start:.1f} sec")
     print('All OK')

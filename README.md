@@ -3,7 +3,7 @@
 Dependencies:
 
 ```
-pip install -U qiskit==0.25.2 pandas seaborn tqdm matplotlib
+pip install -U qiskit==0.25.2 pandas seaborn matplotlib pandarallel
 ```
 
 To reproduce the figures and tables, uncompress `all-data.zip` into the folder containing `generate_figures_and_tables.py`. Then run `generate_figures_and_tables.py`:
