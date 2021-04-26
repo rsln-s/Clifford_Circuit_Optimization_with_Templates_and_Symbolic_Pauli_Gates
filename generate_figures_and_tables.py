@@ -15,6 +15,7 @@ import seaborn as sns
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Clifford
 import time
+from tqdm import tqdm
 
 def verify_one_experiment(row, AG):
     c_orig = Clifford(QuantumCircuit.from_qasm_str(row['original']))
@@ -28,8 +29,9 @@ def verify_one_experiment(row, AG):
 
 
 def verify(df, AG=False):
+    tqdm.pandas()
     start = time.time()
-    df.apply(lambda row: verify_one_experiment(row, AG), axis=1)
+    df.progress_apply(lambda row: verify_one_experiment(row, AG), axis=1)
     end = time.time()
     print(f"Completed in {end - start:.1f} sec")
     print('All OK')
@@ -45,36 +47,38 @@ verify(df, True)
 
 from itertools import chain 
 
-rows = []
-for n in chain(range(5, 61, 10), [64]):
+import copy
+
+for n in range(5, 61, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'path')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
     print(f" Path graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f} & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f} & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
 
-for n in chain(range(5, 61, 10), [64]):
+for n in range(5, 61, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'cycle_graph')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
     print(f" Cycle graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
-    
-for n in range(3,9):
+
+for n in range(2,9):
     dfc = df[(df['height'] == n) & (df['type'] == 'square_grid')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
     print(f" Square lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
-    
-for n in range(2, 7):
+
+for n in range(1, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'triangular_lattice')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
     print(f" Triangular lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
 
-for n in range(1, 3):
+for n in range(1,4):
     dfc = df[(df['height'] == n) & (df['type'] == 'hexagonal_lattice')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
     print(f" Hexagonal lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
 
-for (n1, n2) in [(2,1),(3,1),(2,2),(4,1),(3,2)]:
-    dfc = df[(df['height'] == int(f'{n1}{n2}')) & (df['type'] == 'heavy_hex')]
-    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100    
-    print(f" Heavy hex lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+
+for n in range(1,3):
+    dfc = df[(df['height'] == n) & (df['type'] == 'heavy_hex')]
+    improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
+    print(f" Heavy hexagon lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
 
 # Compute average improvement for Hamiltonian evolution
 
@@ -82,6 +86,8 @@ print(f"Average improvement over A-G: {(df['compiled_aaronson_gottesman_cost'].m
 print(f"Average improvement over A-G (just greedy compiler): {(df['compiled_aaronson_gottesman_cost'].mean() - df['compiled_cost'].mean()) / df['compiled_aaronson_gottesman_cost'].mean() * 100} %")
 print(f"Average improvement over A-G: {(df['compiled_aaronson_gottesman_cost'].mean()) / df['opt_cost'].mean()}")
 print(f"Average improvement over A-G (just greedy compiler): {(df['compiled_aaronson_gottesman_cost'].mean()) / df['compiled_cost'].mean()}")
+timelim = timelim = 129600*1.1
+print(f"Ratio of problems with run time more than 10% above limit: {100* sum(df['runtime'] > timelim) / len(df):.2f}%")
 
 # Optimal n 6 circuits
 
