@@ -37,7 +37,7 @@ def verify(df, AG=False):
     print(f"Completed in {end - start:.1f} sec")
     print('All OK')
 
-df = pd.read_csv("hamiltonian_evolution.csv")
+df = pd.read_csv("hamiltonian_evolution_rev1.csv").set_index('name')
 
 # Should produce the same Clifford tableau
 
@@ -53,37 +53,38 @@ import copy
 for n in range(5, 61, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'path')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Path graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f} & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f} & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Path graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f} & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f} & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 for n in range(5, 61, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'cycle_graph')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Cycle graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Cycle graph & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 for n in range(2,9):
     dfc = df[(df['height'] == n) & (df['type'] == 'square_grid')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Square lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Square lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 for n in range(1, 10):
     dfc = df[(df['height'] == n) & (df['type'] == 'triangular_lattice')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Triangular lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Triangular lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 for n in range(1,4):
     dfc = df[(df['height'] == n) & (df['type'] == 'hexagonal_lattice')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Hexagonal lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Hexagonal lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 
 for n in range(1,3):
     dfc = df[(df['height'] == n) & (df['type'] == 'heavy_hex')]
     improvement = (dfc['compiled_aaronson_gottesman_cost'].mean() - dfc['opt_cost'].mean()) / dfc['compiled_aaronson_gottesman_cost'].mean() * 100
-    print(f" Heavy hexagon lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} \\\\")
+    print(f" Heavy hexagon lattice & {int(dfc['nqubits'].mean())} & {len(dfc)} & {dfc['orig_cost'].mean():.2f}  & {dfc['compiled_aaronson_gottesman_cost'].mean():.2f}  & {dfc['compiled_cost'].mean():.2f} & {dfc['opt_cost'].mean():.2f} & {improvement:.2f} & \\rev{{{dfc['opt_cost_no_swap'].mean():.2f}}} & \\rev{{{dfc['tket_cost_keep_repeating'].mean():.2f}}} \\\\")
 
 # Compute average improvement for Hamiltonian evolution
 
 print(f"Average improvement over A-G: {(df['compiled_aaronson_gottesman_cost'].mean() - df['opt_cost'].mean()) / df['compiled_aaronson_gottesman_cost'].mean() * 100} %")
+print(f"Average improvement over tket: {(df['tket_cost_keep_repeating'].mean() - df['opt_cost_no_swap'].mean()) / df['tket_cost_keep_repeating'].mean() * 100} %")
 print(f"Average improvement over A-G (just greedy compiler): {(df['compiled_aaronson_gottesman_cost'].mean() - df['compiled_cost'].mean()) / df['compiled_aaronson_gottesman_cost'].mean() * 100} %")
 print(f"Average improvement over A-G: {(df['compiled_aaronson_gottesman_cost'].mean()) / df['opt_cost'].mean()}")
 print(f"Average improvement over A-G (just greedy compiler): {(df['compiled_aaronson_gottesman_cost'].mean()) / df['compiled_cost'].mean()}")
